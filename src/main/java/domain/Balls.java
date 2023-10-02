@@ -1,49 +1,42 @@
 package domain;
 
 import util.Constant;
+import util.BallStatus;
+
+import java.util.ArrayList;
 import java.util.List;
 
 public class Balls {
 
-    private List<Integer> balls;
+    private final List<Ball> balls = new ArrayList<>();
 
     public Balls(List<Integer> balls) {
-        this.balls = balls;
-    }
-
-    public Result judge(Balls randomBall) {
-
-        int ballCnt = this.judgeBall(randomBall);
-        int strikeCnt = this.judgeStrike(randomBall);
-
-        return new Result(strikeCnt, ballCnt);
-    }
-
-    public int judgeStrike(Balls randomBall) {
-
-        int strikeCnt = 0;
-
-        for(int i = 0; i< Constant.NUMBER_LENGTH; i++) {
-            if(balls.get(i) == randomBall.balls.get(i)) {
-                strikeCnt++;
-            }
-        }
-        return strikeCnt;
-    }
-
-    public int judgeBall(Balls randomBall) {
-
-        int ballCnt = 0;
-        List<Integer> randomBalls = randomBall.balls;
 
         for(int i=0; i<Constant.NUMBER_LENGTH; i++) {
-            int num = balls.get(i);
-
-            if(randomBalls.contains(num) && randomBalls.get(i)!=num) {
-                ballCnt++;
-            }
+            this.balls.add(new Ball(balls.get(i), i));
         }
-        return ballCnt;
+    }
+
+    public Result judgeBalls(List<Integer> balls) {
+
+        Balls randomBalls = new Balls(balls);
+        Result result = new Result();
+
+        for(Ball ball : this.balls) {
+            BallStatus status = randomBalls.judgeBalls(ball);
+            result.calc(status);
+        }
+
+        return result;
+    }
+
+    public BallStatus judgeBalls(Ball plyerBall) {
+
+        return this.balls.stream()
+                .map(randomBall -> randomBall.judgeBall(plyerBall))
+                .filter(ballStatus -> !BallStatus.NOTHING.equals(ballStatus))
+                .findFirst()
+                .orElse(BallStatus.NOTHING);
     }
 
 }

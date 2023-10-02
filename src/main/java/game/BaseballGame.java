@@ -4,54 +4,52 @@ import domain.Balls;
 import domain.Result;
 import util.Constant;
 import view.InputView;
-import view.ResultView;
+import view.OutputView;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Random;
+import java.util.*;
+import java.util.stream.Collectors;
 
 public class BaseballGame {
 
     public void exec() {
 
         InputView inView = new InputView();
-        ResultView resView = new ResultView();
+        OutputView outView = new OutputView();
 
         do {
 
-            Balls randomBalls = new Balls(makeRandom());
-
-            while (true) {
-
-                Balls playerBalls = inView.printInputNumber();
-
-                Result result = playerBalls.judge(randomBalls);
-
-                if(result.is3Strike()) {
-                    resView.printGameOver();
-                    break;
-                }
-
-                resView.printResult(result);
-            }
+            baseBallJudge(inView, outView, makeRandom());
+            outView.printRestartGame();
 
         } while(inView.printRestartGame());
     }
 
+    private void baseBallJudge(InputView inView, OutputView resView, List<Integer> randomBalls) {
+
+        resView.printInputNumber();
+        Balls playerBalls = inView.printInputNumber();
+
+        Result result = playerBalls.judgeBalls(randomBalls);
+
+        if(result.is3Strike()) resView.printGameOver();
+
+        if(!result.is3Strike()) {
+            resView.printResult(result);
+            baseBallJudge(inView, resView, randomBalls);
+        }
+    }
+
     public List<Integer> makeRandom() {
 
-        List<Integer> randomBalls = new ArrayList<>();
+        Set<Integer> randomBalls = new HashSet<>();
         Random random = new Random();
 
         while (randomBalls.size()!=Constant.NUMBER_LENGTH) {
             int num = random.nextInt(9)+1;
-
-            if(!randomBalls.contains(num)) {
-                randomBalls.add(num);
-            }
+            randomBalls.add(num);
         }
 
-        return randomBalls;
+        return randomBalls.stream().collect(Collectors.toList());
     }
 
 }

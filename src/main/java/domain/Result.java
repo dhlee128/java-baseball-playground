@@ -1,15 +1,11 @@
 package domain;
 
+import util.BallStatus;
 import util.Constant;
 
 public class Result {
-    private int strike=0;
-    private int ball=0;
-
-    public Result(int strike, int ball) {
-        this.strike = strike;
-        this.ball = ball;
-    }
+    private int strike;
+    private int ball;
 
     public int getStrike() {
         return strike;
@@ -25,5 +21,10 @@ public class Result {
 
     public boolean isNothing() {
         return strike==0 && ball==0;
+    }
+
+    public void calc(BallStatus status) {
+        if(status.isStrike()) strike++;
+        if(status.isBall()) ball++;
     }
 }
