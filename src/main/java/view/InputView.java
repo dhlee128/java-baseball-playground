@@ -1,19 +1,18 @@
 package view;
 
-import ball.Ball;
+import domain.Balls;
+import util.Constant;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
 
 public class InputView {
 
-    public List<Integer> printInputNumber() {
+    public Balls printInputNumber() {
         System.out.print("숫자를 입력해 주세요 : ");
 
-        Ball ball = new Ball();
-
-        return ball.makeUser();
-
+        return new Balls(makePlayer());
     }
 
     public boolean printRestartGame() {
@@ -27,5 +26,26 @@ public class InputView {
         } else {
             return false;
         }
+    }
+
+    public List<Integer> makePlayer() {
+
+        List<Integer> playerBalls = new ArrayList<>();
+
+        Scanner sc = new Scanner(System.in);
+        String inputNum = sc.next();
+
+        if(inputNum.length() != Constant.NUMBER_LENGTH) {
+            throw new IllegalArgumentException(Constant.NUMBER_LENGTH+"자리를 입력해주세요.");
+        }
+
+        for(int i = 0; i< Constant.NUMBER_LENGTH; i++) {
+            int num = (int)inputNum.charAt(i)-'0';
+            if(num<1 || num>9) throw new IllegalArgumentException("0-9 를 입력해주세요.");
+
+            playerBalls.add(num);
+        }
+
+        return playerBalls;
     }
 }
